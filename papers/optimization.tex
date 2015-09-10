@@ -1,0 +1,20 @@
+documentclass{article}
+\begin{document}
+\title{Reprojection error based on Scaramuzza's one point algorithm} 
+\author{Akhil Nagariya}
+
+\maketitle
+Let $X_i=(x_i,y_i,z_i)$ and $X_i'=(x_i',y_i',z_i')$ are the corresponding points in the two image frames. Considering the usual orientation of coordinate axes ($Y$ axis pointing down, $X$ axis pointing right and $Z$ axis pointing away from the camera) the rotation about $Y$ axis according to Scaramuzza's one point method can be given as:
+ \begin{equation}
+ \theta = tan^{-1}\left(\frac{x_i'y_i-x_iy_i'}{z_i'y_i+z_iy_i'}\right)
+ \end{equation}
+ Suppose that we are given 2D to 2D imperfect image correspondences $\{X_i\} \leftrightarrow \{X_i'\}$. We wish to find an angle $\hat{\theta}$ and pairs of perfectly matched points $\hat{X_i}$ and $\hat{X_i'}$, i.e. points that satisfy
+ \begin{equation}
+ \theta = tan^{-1}\left(\frac{\hat{x_i}'\hat{y_i}-\hat{x_i}\hat{y_i}'}{\hat{z_i}'\hat{y_i}+\hat{z_i}\hat{y_i}'}\right)
+ \end{equation}
+ and minimize the reprojection error function given by
+ \begin{equation}
+ \sum_i^n d(X_i,\hat{X_i}) + d(X_i',\hat{X_i}')
+ \end{equation}
+ So the correspondences can be interpreted as imperfect images of a world point and the reprojection error quantifies their deviation from the true image projections $\hat{X_i}$,$\hat{X_i}'$
+\end{document}
