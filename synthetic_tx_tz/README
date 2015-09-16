@@ -1,0 +1,12 @@
+LM Optimization Over Tx and Tz. 
+
+
+Files Description 
+
+main.m --> main file 
+lm_optimization --> does optimization using lm-method
+reprojection_error --> Computes the reprojection error
+jacobian_reproject --> Computes the Jacobians 
+gen_trajs --> Generate Synthetic Trajectory with Noise
+nonHomogenize --> Transforms to homogeneous co-ordinates
+

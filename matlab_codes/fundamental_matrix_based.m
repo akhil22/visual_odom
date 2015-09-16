@@ -1,7 +1,7 @@
 
 clear all;close all;
 % seq no
-seq = 'seq_1';
+seq = 'seq_0';
 
 %read ground truth
 [X Y Z R P Yaw]=textread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/gtruth/exp.txt'), '%f %f %f %f %f %f', 'headerlines',1);
@@ -49,7 +49,7 @@ K = [fx 0 cx;0 fy cy;0 0 1];
 list = dir(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Left/data/'));
 
 %length of trajectory to compute
-len = 10;
+len = 15;
 
 %for ploting the trajectory 
 vehicle_positions = zeros(3,147);
@@ -60,30 +60,30 @@ for q=3:len-1
 list(q+segment-1).name
 list(q+segment).name
 
-I1_l =(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Left/data/',list(q+segment-1).name)));
-I2_l =(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Left/data/',list(q+segment).name)));
-I1_r =(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Right/data/',list(q+segment-1).name)));
-I2_r =(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Right/data/',list(q+segment).name)));
-% I1_l = rgb2gray(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Left/data/',list(q+segment-1).name)));
-% I2_l = rgb2gray(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Left/data/',list(q+segment).name)));
-% I1_r = rgb2gray(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Right/data/',list(q+segment-1).name)));
-% I2_r = rgb2gray(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Right/data/',list(q+segment).name)));
+% I1_l =(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Left/data/',list(q+segment-1).name)));
+% I2_l =(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Left/data/',list(q+segment).name)));
+% I1_r =(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Right/data/',list(q+segment-1).name)));
+% I2_r =(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Right/data/',list(q+segment).name)));
+I1_l = rgb2gray(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Left/data/',list(q+segment-1).name)));
+I2_l = rgb2gray(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Left/data/',list(q+segment).name)));
+I1_r = rgb2gray(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Right/data/',list(q+segment-1).name)));
+I2_r = rgb2gray(imread(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Right/data/',list(q+segment).name)));
 
 
 I1 = im2single(I1_l);
 I2 = im2single(I2_l); 
 
 % polygon cordinates of the image region we want to consider for correspondence matching  
-% xi = [  485.7500
-%   335.7500
-%   704.7500
-%   629.7500
-%   485.7500]';
-% yi=[    259.2500
-%   353.7500
-%   349.2500
-%   242.7500
-%   259.2500]';
+xi = [  485.7500
+  335.7500
+  704.7500
+  629.7500
+  485.7500]';
+yi=[    259.2500
+  353.7500
+  349.2500
+  242.7500
+  259.2500]';
 xi = [ 305.7500
     8.7500
   277.2500
@@ -100,35 +100,37 @@ yi=[    266.7500
 feature_file = strcat('/home/akhil/Desktop/visual_odom/',seq,'/left_rijvi_match_features/',int2str(q+segment-1),'.txt')
 
 [Y1 X1 Y2 X2]=textread(feature_file, '%f %f %f %f', 'headerlines',1);
+%  [X1 Y1 X2 Y2]=textread(feature_file, '%f %f %f %f', 'headerlines',1);
 in = inpolygon(X1,Y1,xi,yi);
-
 X1=X1(in);
 Y1=Y1(in);
 X2=X2(in);
 Y2=Y2(in);
 
  figure;
- showMatchedFeatures(I1,I2,[X1 Y1],[X2 Y2]);
-%  keyboard;
+  showMatchedFeatures(I1,I2,[X1 Y1],[X2 Y2]);
+ 
 X1 = [X1';Y1'];
 X2 = [X2';Y2'];
-
 X1 = [X1;ones(1,size(X1,2))];
 X2 = [X2;ones(1,size(X2,2))];
+
 
 tX1 = K\X1;
 tX2 = K\X2;
 nump = size(X1,2);
 
 theta = 2*atan2((1*tX2(2,:).*tX1(1,:)-tX2(1,:).*tX1(2,:)),(tX2(3,:).*tX1(2,:)+tX2(2,:).*tX1(3,:)));
-for i = 1:nump;
-    if(theta(i) >= pi)
-        theta(i) = theta(i)-2*pi;
-    end
-    if(theta(i) <= -pi)
-        theta(i) = theta(i) +2*pi;
-    end
-end
+tX1(1,:) = tX1(1,:)/tX1(3,:);
+tX1(2,:) = tX1(2,:)/tX1(3,:);
+tX2(1,:) = tX2(1,:)/tX2(3,:);
+tX2(2,:) = tX2(2,:)/tX2(3,:);
+%   F = estimateFundamentalMatrix(tX1(1:2,:)',tX2(1:2,:)','Method','RANSAC','NumTrials',2000,'DistanceThreshold',1e-4);
+
+%    F = estimateFundamentalMatrix(tX1(1:2,:)',tX2(1:2,:)');
+%    [rot,tra] = EssentialMatrixToCameraMatrix(F)
+   
+
 %%Ransac to select best angle
 n_inliers = 0;
 n_model = 0;
@@ -254,88 +256,14 @@ sss = -Rcomputed'*x(1:3)
          Tresult = -Rcomputed'*x(1:3)
 % end 
 Tcomputed = [Rcomputed' Tresult];
+% Tcomputed = [Rcomputed',Tresult];
 Tcomputed = [Tcomputed; 0 0 0 1];
 T = T*Tcomputed;
 temp_pose = T*[0;0;0;1];
 vehicle_positions(:,q-2) = temp_pose(1:3);
-feature_file = strcat('/home/akhil/Desktop/visual_odom/',seq,'/left_rijvi_match_features/',int2str(q+segment-1),'.txt')
-
-[Y1 X1 Y2 X2]=textread(feature_file, '%f %f %f %f', 'headerlines',1);
-
-xi=[ 419.7500
-  421.2500
-  503.7500
-  502.2500
-  505.2500
-  416.7500
-  419.7500
-    ];
-yi = [ 109.2500
-  146.7500
-  148.2500
-  101.7500
-   58.2500
-   56.7500
-  109.2500
-    ];
-xi=[ 677.7500
-  649.2500
-  770.7500
-  812.7500
-  685.2500
-  677.7500];
-yi=[ 70.2500
-  112.2500
-  116.7500
-   64.2500
-   65.7500
-   70.2500
-    ];
-% xi= 1.0e+03 *[
-%     1.1837
-%     1.0997
-%     1.2242
-%     1.2272
-%     1.1837];
-% yi=[35.4383
-%   116.4710
-%   114.9704
-%    29.4359
-%    35.4383];
-in = inpolygon(X1,Y1,xi,yi);
-
-X1=X1(in);
-Y1=Y1(in);
-X2=X2(in);
-Y2=Y2(in);
-
- figure;
- showMatchedFeatures(I1,I2,[X1 Y1],[X2 Y2]);
-X1 = [X1';Y1'];
-X2 = [X2';Y2'];
-
-X1 = [X1;ones(1,size(X1,2))];
-X2 = [X2;ones(1,size(X2,2))];
-
-[H corrPtIdx] =ransacfithomography([X1(1,:);X1(2,:)],[X2(1,:);X2(2,:)],0.00001);
-detH = det(H)
-H = H/detH
-size(X1)
-size(K)
-direction1 = K\X1;
-direction2 = K\X2;
-angle = atan2(norm(cross(direction1,direction2)),dot(direction1,direction2))
-% [H corrPtIdx] =ransacfithomography([X1(1,:);X1(2,:)],[X2(2,:);X2(1,:)],0.0001);
-% H
-
-H = K\H*K;
-theta2 = atan2(-H(3,1),sqrt(H(3,2)^2+H(3,3)^2))
-%  theta2 = atan2(H(2,1),H(1,1))
-%  theta2 = atan2(H(3,2),H(3,3))
-
-calculated_theta2(q-2) = median(angle)
-real_theta(q-2)
-theta(n_model)
+Rcomputed'
+% rot
+% keyboard;
 end
 close all;
 yaa = vehicle_positions(3,len-3);
@@ -358,10 +286,10 @@ figure;
 plot(real_theta*180/pi,'+r');
 hold on;
 plot(calculated_theta*180/pi,'+b');
-hold on
-plot(calculated_theta2*180/pi,'+g');
+% hold on
+% plot(calculated_theta2*180/pi,'-g');
 % legend('ground truth difference in anlge','calculated difference in angle','optimized_difference in angle'); 
-% legend('ground truth difference in anlge','calculated difference in angle'); 
+legend('ground truth difference in anlge','calculated difference in angle'); 
 
 
 z=vehicle_positions(:,1:len-3)-[X(segment+1:segment+len-3)';zeros(1,len-3);Z(segment+1:segment+len-3)'];
