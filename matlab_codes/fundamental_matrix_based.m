@@ -49,7 +49,7 @@ K = [fx 0 cx;0 fy cy;0 0 1];
 list = dir(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Left/data/'));
 
 %length of trajectory to compute
-len = 10;
+len = 15;
 
 %for ploting the trajectory 
 vehicle_positions = zeros(3,147);
@@ -74,16 +74,16 @@ I1 = im2single(I1_l);
 I2 = im2single(I2_l); 
 
 % polygon cordinates of the image region we want to consider for correspondence matching  
-% xi = [  485.7500
-%   335.7500
-%   704.7500
-%   629.7500
-%   485.7500]';
-% yi=[    259.2500
-%   353.7500
-%   349.2500
-%   242.7500
-%   259.2500]';
+xi = [  485.7500
+  335.7500
+  704.7500
+  629.7500
+  485.7500]';
+yi=[    259.2500
+  353.7500
+  349.2500
+  242.7500
+  259.2500]';
 xi = [ 305.7500
     8.7500
   277.2500
@@ -100,7 +100,7 @@ yi=[    266.7500
 feature_file = strcat('/home/akhil/Desktop/visual_odom/',seq,'/left_rijvi_match_features/',int2str(q+segment-1),'.txt')
 
 [Y1 X1 Y2 X2]=textread(feature_file, '%f %f %f %f', 'headerlines',1);
-% [X1 Y1 X2 Y2]=textread(feature_file, '%f %f %f %f', 'headerlines',1);
+%  [X1 Y1 X2 Y2]=textread(feature_file, '%f %f %f %f', 'headerlines',1);
 in = inpolygon(X1,Y1,xi,yi);
 X1=X1(in);
 Y1=Y1(in);
@@ -108,21 +108,28 @@ X2=X2(in);
 Y2=Y2(in);
 
  figure;
- showMatchedFeatures(I1,I2,[X1 Y1],[X2 Y2]);
-    
+  showMatchedFeatures(I1,I2,[X1 Y1],[X2 Y2]);
+ 
 X1 = [X1';Y1'];
 X2 = [X2';Y2'];
 X1 = [X1;ones(1,size(X1,2))];
 X2 = [X2;ones(1,size(X2,2))];
-F = estimateFundamentalMatrix([X1 Y1],[X2 Y2]);
- keyboard;
-E = K'*F
+
+
 tX1 = K\X1;
 tX2 = K\X2;
 nump = size(X1,2);
 
 theta = 2*atan2((1*tX2(2,:).*tX1(1,:)-tX2(1,:).*tX1(2,:)),(tX2(3,:).*tX1(2,:)+tX2(2,:).*tX1(3,:)));
+tX1(1,:) = tX1(1,:)/tX1(3,:);
+tX1(2,:) = tX1(2,:)/tX1(3,:);
+tX2(1,:) = tX2(1,:)/tX2(3,:);
+tX2(2,:) = tX2(2,:)/tX2(3,:);
+%   F = estimateFundamentalMatrix(tX1(1:2,:)',tX2(1:2,:)','Method','RANSAC','NumTrials',2000,'DistanceThreshold',1e-4);
 
+%    F = estimateFundamentalMatrix(tX1(1:2,:)',tX2(1:2,:)');
+%    [rot,tra] = EssentialMatrixToCameraMatrix(F)
+   
 
 %%Ransac to select best angle
 n_inliers = 0;
@@ -249,11 +256,14 @@ sss = -Rcomputed'*x(1:3)
          Tresult = -Rcomputed'*x(1:3)
 % end 
 Tcomputed = [Rcomputed' Tresult];
+% Tcomputed = [Rcomputed',Tresult];
 Tcomputed = [Tcomputed; 0 0 0 1];
 T = T*Tcomputed;
 temp_pose = T*[0;0;0;1];
 vehicle_positions(:,q-2) = temp_pose(1:3);
-
+Rcomputed'
+% rot
+% keyboard;
 end
 close all;
 yaa = vehicle_positions(3,len-3);
