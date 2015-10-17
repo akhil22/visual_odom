@@ -84,23 +84,23 @@ I2 = im2single(I2_l);
 %   349.2500
 %   242.7500
 %   259.2500]';
-xi = [ 305.7500
-    8.7500
-  277.2500
-  413.7500
-  305.7500]';
-yi=[    266.7500
-  361.2500
-  359.7500
-  278.7500
-  266.7500]';
-
+% xi = [ 305.7500
+%     8.7500
+%   277.2500
+%   413.7500
+%   305.7500]';
+% yi=[    266.7500
+%   361.2500
+%   359.7500
+%   278.7500
+%   266.7500]';
+% 
 
 %read deep match feature matches 
-feature_file = strcat('/home/akhil/Desktop/visual_odom/',seq,'/left_fast_match_features/',int2str(q+segment-1),'.txt')
+feature_file = strcat('/home/akhil/Desktop/visual_odom/',seq,'/left_mix_match_features/',int2str(q+segment-1),'.txt')
 
 % [Y1 X1 Y2 X2]=textread(feature_file, '%f %f %f %f', 'headerlines',1);
-[X1 Y1 X2 Y2]=textread(feature_file, '%f %f %f %f', 'headerlines',1);
+[Y1 X1 Y2 X2]=textread(feature_file, '%f %f %f %f', 'headerlines',1);
 in = inpolygon(X1,Y1,xi,yi);
 X1=X1(in);
 Y1=Y1(in);
@@ -121,12 +121,13 @@ tX2 = K\X2;
 nump = size(X1,2);
 
 theta = 2*atan2((1*tX2(2,:).*tX1(1,:)-tX2(1,:).*tX1(2,:)),(tX2(3,:).*tX1(2,:)+tX2(2,:).*tX1(3,:)));
-tX1(1,:) = tX1(1,:)/tX1(3,:);
-tX1(2,:) = tX1(2,:)/tX1(3,:);
-tX2(1,:) = tX2(1,:)/tX2(3,:);
-tX2(2,:) = tX2(2,:)/tX2(3,:);
- F = estimateFundamentalMatrix(tX1(1:2,:)',tX2(1:2,:)')   
-keyboard;
+% tX1(1,:) = tX1(1,:)/tX1(3,:);
+% tX1(2,:) = tX1(2,:)/tX1(3,:);
+% tX2(1,:) = tX2(1,:)/tX2(3,:);
+% tX2(2,:) = tX2(2,:)/tX2(3,:);
+%  F = estimateFundamentalMatrix(tX1(1:2,:)',tX2(1:2,:)')
+ 
+% keyboard;
 %%Ransac to select best angle
 n_inliers = 0;
 n_model = 0;

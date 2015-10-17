@@ -49,7 +49,7 @@ K = [fx 0 cx;0 fy cy;0 0 1];
 list = dir(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Left/data/'));
 
 %length of trajectory to compute
-len = 30;
+len = 10;
 
 %for ploting the trajectory 
 vehicle_positions = zeros(3,147);
@@ -129,12 +129,24 @@ X2=X2(in);
 Y2=Y2(in);
 
 in = inpolygon(X1,Y1,xi,yi);
-X1=X1(in);
-Y1=Y1(in);
-X2=X2(in);
-Y2=Y2(in);
-%  figure;
-%  showMatchedFeatures(I1,I2,[X1 Y1],[X2 Y2]);
+% X1=X1(in);
+% Y1=Y1(in);
+% X2=X2(in);
+% Y2=Y2(in);
+  
+  showMatchedFeatures(I1,I2,[X1 Y1],[X2 Y2]);
+  lines = line_detector(I1_l);
+lineCount = size(lines,2);
+
+% Render the result
+
+hold on;
+for lineIndex=2:2    
+    X1_line =[lines(2,lineIndex); lines(4,lineIndex)];
+    Y1_line =[lines(1,lineIndex); lines(3,lineIndex)];
+    plot(X1_line,Y1_line,'LineWidth',2,'Color',[1 0 0]);
+end
+ pause;
 X1 = [X1';Y1'];
 X2 = [X2';Y2'];
 
@@ -278,8 +290,9 @@ sss = -Rcomputed'*x(1:3)
  if sss < 1.2
 
      Rcomputed =[cos(theta(n_model)) 0 sin(theta(n_model)) ; 0 1 0 ; -sin(theta(n_model)) 0 cos(theta(n_model))]';
-     Tresult = -Rcomputed'*x(1:3)
+%      Tresult = -Rcomputed'*x(1:3)
  end 
+%  Tresult = -Rcomputed'*Tresult
 %  Rcomputed = eye(3);
 
 % dcm = angle2dcm( Yaw(q-2+segment), P(q-2+segment), R(q-2+segment))
@@ -299,7 +312,7 @@ sss = -Rcomputed'*x(1:3)
 Tcomputed = [Rcomputed' Tresult];
 Tcomputed = [Tcomputed; 0 0 0 1];
 T = T*Tcomputed;
-temp_pose = Tcomputed*[0;0;0;1];
+temp_pose = T*[0;0;0;1];
 vehicle_positions(:,q-2) = temp_pose(1:3);
 
 end

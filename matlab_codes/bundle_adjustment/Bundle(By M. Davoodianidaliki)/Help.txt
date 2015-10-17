@@ -1,0 +1,25 @@
+Help for Bundle Adjustment function developed by M. Davoodianidaliki
+% Contact me by mdavoodian@ut.ac.ir, mahmooddavoodian@gmail.com .
+% everyone can use it as long as they mention author name.
+
+NOTEs:
+-this function is so general that one need to remove part of part of usually to use in his/her own work!
+-It has been tested that this program can be used for automatic 3d model reconstruction by automatic matching.
+  - Sub-Note: For most applications, one needs to remove part of program.
+- All initial values required for program are saved in a single file with .mat format.
+- Initial values influence on convergence of program.
+
+Number of Camera Unknown Parameters: focal length,K1,K2,K3,P1,P2,B1,B2,xc,yc
+Station Unknown Parameters: Xc,Yc,Zc,Omega,Phi,Kappa
+CamNum: Number of Different cameras used in project.
+ChkUnNum: Number of check/tie points
+RGBImgNum = Number of total imaging stations
+Cntrl = Control (if binary: is or not a control point.)
+Interior equation used form fraser,1997
+FBrownx=...
+    xBarImg.*(radImg.^2.*BPK1+radImg.^4.*BPK2+radImg.^6.*BPK3)+...
+    (2*(xBarImg.^2)+(radImg.^2))*BPK4+...
+    2*BPK5*xBarImg.*yBarImg+ BPK6*xBarImg+BPK7*yBarImg;
+FBrowny=...
+    yBarImg.*(radImg.^2.*BPK1+radImg.^4.*BPK2+radImg.^6.*BPK3)+...
+    (2*(yBarImg.^2)+(radImg.^2))*BPK5+ 2*BPK4*xBarImg.*yBarImg;
