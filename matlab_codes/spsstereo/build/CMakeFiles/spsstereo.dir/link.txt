@@ -1,0 +1,1 @@
+/usr/bin/c++   -Wall -O3 -msse4.2   CMakeFiles/spsstereo.dir/SPSStereo.o CMakeFiles/spsstereo.dir/SGMStereo.o CMakeFiles/spsstereo.dir/spsstereo_main.o  -o spsstereo -rdynamic -lpng 

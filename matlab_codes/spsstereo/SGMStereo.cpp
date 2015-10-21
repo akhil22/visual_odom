@@ -20,7 +20,7 @@
 #include <algorithm>
 #include <nmmintrin.h>
 #include <stdexcept>
-
+#include<limits.h>
 // Default parameters
 const int SGMSTEREO_DEFAULT_DISPARITY_TOTAL = 256;
 const double SGMSTEREO_DEFAULT_DISPARITY_FACTOR = 256;

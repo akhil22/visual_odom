@@ -86,7 +86,7 @@ base_length = 0.54;
 list = dir(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Left/data/'));
 % list = dir('/home/akhil/image_bkp/');
 %len = size(list,1);
-len = 14;
+len = 1000;
 vehicle_positions = zeros(3,147);
 
 for q=3:len-1
@@ -512,8 +512,9 @@ param.disp_max    = 255;         % maximum disparity (positive integer)
 param.subsampling = 0;
 [D1_l,D1_r] = elasMex(I1_l',I1_r',param);
 [D2_l,D2_r] = elasMex(I2_l',I2_r',param);
-
-
+kkk = (D1_l  )*256.0/((max(D1_l) - min(D1_l)));
+imshow(kkk');
+pause;
 
 ind = 0;
 mmin = inf;
