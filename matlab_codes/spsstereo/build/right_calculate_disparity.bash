@@ -23,7 +23,7 @@ echo $im1
 echo $im2
 ./spsstereo $im1 $im2 
 output="${i1}_left_disparity.png"
-mv $output /home/akhil/visual_odom/seq_0/left_disparity/${i1}.png
+mv $output /home/akhil/visual_odom/seq_0/right_disparity/${i1}.png
 done
 
 

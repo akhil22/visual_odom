@@ -17,7 +17,7 @@ while ischar(tline)
         tline = fgets(fid);
         num_points=sscanf(tline,'%d');
         for p=1:num_points
-            tline = fgets(fid);;
+            tline = fgets(fid);
         end
     end
         if(k ~= 1)

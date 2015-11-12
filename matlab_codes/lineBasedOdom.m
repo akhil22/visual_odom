@@ -49,7 +49,7 @@ K = [fx 0 cx;0 fy cy;0 0 1];
 list = dir(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Left/data/'));
 
 %length of trajectory to compute
-len = 100;
+len = 10;
 
 %for ploting the trajectory 
 vehicle_positions = zeros(3,147);

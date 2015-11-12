@@ -49,7 +49,7 @@ K = [fx 0 cx;0 fy cy;0 0 1];
 list = dir(strcat('/home/akhil/Desktop/visual_odom/',seq,'/Left/data/'));
 
 %length of trajectory to compute
-len = 10;
+len = 8;
 
 %for ploting the trajectory 
 vehicle_positions = zeros(3,147);
@@ -115,14 +115,15 @@ yi=[    259.2500
 %   365.7500
 %   250.2500
 %     ];
-
+% 
 %read deep match feature matches 
 feature_file = strcat('/home/akhil/Desktop/visual_odom/',seq,'/left_mix_match_features/',int2str(q-2+segment-1),'.txt')
 
 % [X1 Y1 X2 Y2 score index]=textread(feature_file, '%d %d %d %d %f %d', 'headerlines',1);
 [X1 Y1 X2 Y2]=textread(feature_file, '%f %f %f %f', 'headerlines',1);
+in = inpolygon(X1,Y1,xi,yi);
 
-in = X1 > 0 & X2 > 0 & Y1 > 0 & Y2 > 0;
+% in = X1 > 0 & X2 > 0 & Y1 > 0 & Y2 > 0;
 X1=X1(in);
 Y1=Y1(in);
 X2=X2(in);
@@ -134,19 +135,19 @@ in = inpolygon(X1,Y1,xi,yi);
 % X2=X2(in);
 % Y2=Y2(in);
   
-  showMatchedFeatures(I1,I2,[X1 Y1],[X2 Y2]);
-  lines = line_detector(I1_l);
-lineCount = size(lines,2);
-
-% Render the result
-
-hold on;
-for lineIndex=2:2    
-    X1_line =[lines(2,lineIndex); lines(4,lineIndex)];
-    Y1_line =[lines(1,lineIndex); lines(3,lineIndex)];
-    plot(X1_line,Y1_line,'LineWidth',2,'Color',[1 0 0]);
-end
- pause;
+%   showMatchedFeatures(I1,I2,[X1 Y1],[X2 Y2]);
+%   lines = line_detector(I1_l);
+% lineCount = size(lines,2);
+% 
+% % Render the result
+% 
+% hold on;
+% for lineIndex=2:2    
+%     X1_line =[lines(2,lineIndex); lines(4,lineIndex)];
+%     Y1_line =[lines(1,lineIndex); lines(3,lineIndex)];
+%     plot(X1_line,Y1_line,'LineWidth',2,'Color',[1 0 0]);
+% end
+ 
 X1 = [X1';Y1'];
 X2 = [X2';Y2'];
 
@@ -260,15 +261,14 @@ end
 end
 %    x1 = x1main;
 %    x2 = x2main;
-
 %filter correspondences based on following rule
 indd =abs(x1(2,:)-1.65) <= 0.2 & abs(x1(3,:))<= 15 & abs(x2(3,:))<= 15;
 indd
 x1=x1(:,indd)
 x2=x2(:,indd)
 
-   x1 = x1main;
-   x2 = x2main;
+   x1 = x1main
+   x2 = x2main
 tarray = tarray(tarray<10);
 t = median(tarray);
  if t > 1.52
@@ -292,7 +292,7 @@ sss = -Rcomputed'*x(1:3)
      Rcomputed =[cos(theta(n_model)) 0 sin(theta(n_model)) ; 0 1 0 ; -sin(theta(n_model)) 0 cos(theta(n_model))]';
 %      Tresult = -Rcomputed'*x(1:3)
  end 
-%  Tresult = -Rcomputed'*Tresult
+%   Tresult = -Rcomputed'*Tresult
 %  Rcomputed = eye(3);
 
 % dcm = angle2dcm( Yaw(q-2+segment), P(q-2+segment), R(q-2+segment))
@@ -343,18 +343,18 @@ hold on;
 plot(vehicle_positions(1,1:len-3),vehicle_positions(3,1:len-3),'+b'); axis([axisx_low axisx_high axisy_low axisy_high]); xlabel('X') ;ylabel('Z');title(sprintf('trajectory comparision max error = %f',m));
 legend('ground truth','computed trajecotry');
 
-figure;
-plot(real_theta*180/pi,'-r');
-hold on;
-plot(calculated_theta*180/pi,'-b');
-hold on
-plot(calculated_theta2*180/pi,'-g');
-legend('ground truth difference in anlge','calculated difference in angle','optimized_difference in angle'); 
-xlabel('iteration number')
-ylabel('difference in angles between consecutive frames(in degrees)'); 
+% figure;
+% plot(real_theta*180/pi,'-r');
+% hold on;
+% plot(calculated_theta*180/pi,'-b');
+% hold on
+% plot(calculated_theta2*180/pi,'-g');
+% legend('ground truth difference in anlge','calculated difference in angle','optimized_difference in angle'); 
+% xlabel('iteration number')
+% ylabel('difference in angles between consecutive frames(in degrees)'); 
 
 z=vehicle_positions(:,1:len-3)-[X(segment+1:segment+len-3)';zeros(1,len-3);Z(segment+1:segment+len-3)'];
 segment = segment+30;
 
-keyboard;
+pause;
 end
