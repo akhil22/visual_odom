@@ -34,7 +34,7 @@ for key_num = 1:num_keys
 %     if key_num < num_keys
 %  fprintf(f3,'%s ',keyfile{key_num});
 %     else
-        fprintf(f3,'%s\n',keyfile{key_num})
+        fprintf(f3,'%s\n',keyfile{key_num});
 %     end
 
 end
